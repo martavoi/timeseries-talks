@@ -1,0 +1,36 @@
+influxdb:
+  image: influxdb:alpine
+  container_name: influxdb
+  ports:
+    - "8086:8086"
+  env_file:
+    - 'influxdb.env'
+
+telegraf:
+  image: telegraf:alpine
+  container_name: telegraf
+  ports:
+    - "8125:8125/udp"
+  links:
+    - influxdb
+  volumes:
+    - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
+grafana:
+  image: grafana/grafana
+  container_name: grafana
+  ports:
+    - "3000:3000"
+  user: "0"
+  links:
+    - influxdb
+
+chronograf:
+  image: chronograf:alpine
+  container_name: chronograf
+  ports:
+    - "8888:8888"
+  links:
+    - influxdb
+  env_file:
+    - 'chronograf.env'
